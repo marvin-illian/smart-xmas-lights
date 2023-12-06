@@ -1,6 +1,7 @@
 import xled
 import time
 import io
+import random
 
 def send_rt_frame(control, colors):
     """
@@ -236,6 +237,36 @@ def generate_outward_moving_pattern_zigzag(grid_width, grid_height, on_color=(0,
 
     return frames
 
+def generate_precipitation_movie(grid_width, grid_height, color, num_frames=10, density=0.5):
+    """
+    Generate a movie simulating precipitation.
+
+    :param grid_width: Width of the grid.
+    :param grid_height: Height of the grid.
+    :param color: WRGB tuple for the precipitation color.
+    :param num_frames: Number of frames in the movie.
+    :param density: Density of the precipitation (probability of a given LED being on in each frame).
+    :return: List of frames, each frame is a list of WRGB tuples.
+    """
+    frames = []
+    # Initialize precipitation state
+    precipitation = [[False]*grid_width for _ in range(grid_height)]
+
+    for _ in range(num_frames):
+        # Move existing precipitation down
+        for row in range(grid_height-1, 0, -1):
+            precipitation[row] = list(precipitation[row-1])
+
+        # Create new precipitation in the top row
+        precipitation[0] = [random.random() < density for _ in range(grid_width)]
+
+        # Create a frame from the precipitation state
+        frame = [color if cell else (0, 0, 0, 0) for row in precipitation for cell in row]
+        frames.append(frame)
+
+    return frames
+
+
 ####################
 # Setup the device #
 ####################
@@ -317,6 +348,23 @@ play_movie(control, movie, frame_delay=0.1, loop=3)
 movie = generate_inward_moving_pattern_zigzag(grid_width, grid_height)
 play_movie(control, movie, frame_delay=0.1, loop=3)
 
+##########################
+# Simulate Precipitation #
+##########################
+
+# light rain
+rain_color = (0, 0, 255, 255)  # Blue for rain
+rain_movie = generate_precipitation_movie(grid_width=10, grid_height=10, color=rain_color, num_frames=20, density=0.05)
+play_movie(control, rain_movie, frame_delay=0.1, loop=1)
+
+# heavy rain
+rain_color = (0, 0, 255, 255)  # Blue for rain
+rain_movie = generate_precipitation_movie(grid_width=10, grid_height=10, color=rain_color, num_frames=20, density=0.15)
+play_movie(control, rain_movie, frame_delay=0.1, loop=1)
+
+snow_color = (0, 255, 255, 255)  # White for snow
+snow_movie = generate_precipitation_movie(grid_width=10, grid_height=10, color=snow_color, num_frames=20, density=0.1)
+play_movie(control, snow_movie, frame_delay=0.3, loop=1)
 
 # Turn off
 high_control.turn_off()
