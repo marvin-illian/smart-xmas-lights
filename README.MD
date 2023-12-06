@@ -18,3 +18,8 @@ pip install .
 ```bash
 python3 twinkly-api.py
 ```
+
+## Useful documentation
+
+- [https://xled.readthedocs.io/en/latest/xled.html](https://xled.readthedocs.io/en/latest/xled.html)
+- [https://xled-docs.readthedocs.io/en/latest/protocol_details.html](https://xled-docs.readthedocs.io/en/latest/protocol_details.html)
