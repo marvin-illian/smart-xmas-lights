@@ -12,3 +12,9 @@ Install xled:
 cd xled
 pip install .
 ```
+
+## Run
+
+```bash
+python3 twinkly-api.py
+```
