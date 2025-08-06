@@ -1,13 +1,30 @@
-# List of light strings to control
 LIGHT_STRINGS = [
     {
-        'name': 'Lichterkette 1',
-        'ip_address': '192.168.1.10',
-        'mac_address': 'AA:BB:CC:DD:EE:FF',
+        'mac_address': '0c:8b:95:7b:ad:f9',
+        'position': 1,
     },
     {
-        'name': 'Lichterkette 2',
-        'ip_address': '192.168.1.11',
-        'mac_address': 'FF:EE:DD:CC:BB:AA',
+        'mac_address': 'c0:49:ef:3d:6d:f1',
+        'position': 2,
     },
+    {
+        'mac_address': 'c0:49:ef:13:d0:29',
+        'position': 3,
+    },
+    {
+        'mac_address': 'c0:49:ef:3b:72:e5',
+        'position': 4,
+    },
+    {
+        'mac_address': '94:e6:86:a1:a5:a1',
+        'position': 5,
+    },
+    {
+        'mac_address': '94:e6:86:a1:a5:a9', # Trafohaus mit Dauerstrom
+        'position': 6,
+    },
+    {
+        'mac_address': '0c:8b:95:7b:a1:55',
+        'position': 7,
+    }
 ]

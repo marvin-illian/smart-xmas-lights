@@ -1,22 +1,28 @@
+# main.py
+
 from light_string_manager import LightStringManager
 
 def main():
     """
-    Main function to initialize the LightStringManager, turn on all lights,
-    run the converging effect, and handle graceful shutdown.
+    Hauptfunktion zur Initialisierung des LightStringManagers, Einschalten aller Lichter,
+    Ausführen des Konvergenzeffekts und sauberen Beenden.
     """
     manager = LightStringManager()
     manager.turn_on_all()
 
-    # Index of the light string where the effects should converge (0-based index)
-    target_index = 4  # Change this to the desired target index
+    # Index of the light string to which the effects should converge (0-based index)
+    target_index = 2
 
     try:
-        # Run the converging effect for a specified duration and frames per second
-        manager.run_converging_effect(target_index=target_index, duration=10, fps=30)
+        print("Starte Licht-Programm...")
+        # Konvergenzeffekt für eine bestimmte Dauer und Frames pro Sekunde ausführen
+        manager.run_converging_effect(target_index=target_index, duration=10, fps=1)
     except KeyboardInterrupt:
-        print("Interrupted by user. Turning off all lights.")
+        print("Unterbrechung durch Benutzer erkannt.")
+    except Exception as e:
+        print(f"Ein Fehler ist aufgetreten: {e}")
     finally:
+        print("Schalte alle Lichter aus.")
         manager.turn_off_all()
 
 if __name__ == "__main__":

@@ -1,26 +1,72 @@
 from config import LIGHT_STRINGS
 from led_display_utils import LEDDisplay
 import time
+from xled.discover import xdiscover
 
 class LightStringManager:
-    def __init__(self):
+    def __init__(self, discovery_timeout=3):
         """
         Initialize the LightStringManager by creating LEDDisplay instances for each light string.
+        :param discovery_timeout: Time in seconds to wait for device discovery (default 10 seconds).
         """
         self.light_strings = []
+        self.discovery_timeout = discovery_timeout
         self.initialize_light_strings()
 
     def initialize_light_strings(self):
         """
         Initialize all LEDDisplay instances based on the configuration.
+        Dynamically discover devices and match them with MAC addresses.
+        Continues searching upon exceptions until the timeout is reached.
         """
+        discovered_devices = []
+        start_time = time.time()
+
+        print("Starte Geräteentdeckung...")
+
+        while time.time() - start_time < self.discovery_timeout:
+            try:
+                # Start discovery
+                for response in xdiscover():
+                    device = {
+                        'ip_address': response.ip_address,
+                        'mac_address': response.hw_address.lower(),  # Ensure MAC address is in lowercase
+                    }
+                    # Avoid duplicates
+                    if device not in discovered_devices:
+                        discovered_devices.append(device)
+                        print(f"Gerät gefunden: {response.hw_address} ({response.ip_address})")
+            except Exception as e:
+                if str(e) == "Unknown event":
+                    pass  # Ignore the exception and continue
+                else:
+                    print(f"Fehler bei der Geräteentdeckung: {e}")
+            # time.sleep(0.5)  # Wait before next discovery attempt
+
+        if not discovered_devices:
+            print("Keine Geräte gefunden.")
+            return
+
+        # Create a mapping from MAC address to IP address
+        mac_to_ip = {device['mac_address']: device['ip_address'] for device in discovered_devices}
+
+        # Initialize LEDDisplay instances based on MAC addresses
         for light in LIGHT_STRINGS:
-            led_display = LEDDisplay(light['ip_address'], light['mac_address'])
-            self.light_strings.append({
-                'name': light['name'],
-                'position': light.get('position', None),  # Optional position for ordering
-                'led_display': led_display
-            })
+            mac_address = light['mac_address'].lower()  # Ensure MAC address is in lowercase
+            ip_address = mac_to_ip.get(mac_address)
+
+            if ip_address:
+                led_display = LEDDisplay(ip_address, mac_address)
+                self.light_strings.append({
+                    'position': light.get('position', None),
+                    'mac_address': mac_address,
+                    'led_display': led_display
+                })
+            else:
+                print(f"Gerät mit MAC-Adresse {mac_address} nicht gefunden.")
+
+        # Sort light strings based on position
+        self.light_strings.sort(key=lambda x: x['position'])
 
     def turn_on_all(self):
         """
